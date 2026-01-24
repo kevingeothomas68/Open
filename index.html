@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>For You 💗</title>
+  <style>
+    :root{
+      --bgA:#fff7fb;
+      --bgB:#f2fbff;
+      --bgC:#f7fff2;
+      --card:#ffffffd9;
+      --text:#1f2937;
+      --accent:#ff5fa2;
+      --accent2:#7c6cff;
+      --shadow: 0 18px 55px rgba(0,0,0,.09);
+      --radius: 28px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 10% 15%, var(--bgB), transparent),
+        radial-gradient(900px 500px at 90% 20%, var(--bgA), transparent),
+        radial-gradient(900px 500px at 40% 90%, var(--bgC), transparent),
+        linear-gradient(180deg, #fff, #fff);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    .wrap{max-width:1000px; margin:0 auto; padding:26px 16px 70px;}
+    .hero{
+      position:relative;
+      background: linear-gradient(135deg, #ffffffee, #ffffffbb);
+      border:1px solid #ffffffaa;
+      border-radius: var(--radius);
+      padding:22px 18px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    /* cute blobs */
+    .blob{
+      position:absolute; inset:auto;
+      width:280px; height:280px;
+      border-radius: 999px;
+      filter: blur(24px);
+      opacity:.55;
+      z-index:0;
+      pointer-events:none;
+      animation: drift 8s ease-in-out infinite alternate;
+    }
+    .b1{left:-90px; top:-90px; background: #ffd1e6;}
+    .b2{right:-110px; top:40px; background: #cfe5ff; animation-duration:10s;}
+    .b3{left:40%; bottom:-140px; background: #d9ffd8; animation-duration:11s;}
+    @keyframes drift{
+      to{ transform: translate(18px, 22px) scale(1.03); }
+    }
+
+    .content{position:relative; z-index:1;}
+    .top{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    }
+    .title{
+      font-size:28px; font-weight:900; letter-spacing:-.02em;
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    }
+    .sparkle{filter: drop-shadow(0 10px 20px rgba(255,95,162,.25))}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      font-size:12px; font-weight:800;
+      padding:8px 12px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid #eee;
+      box-shadow: 0 10px 24px rgba(0,0,0,.05);
+      user-select:none;
+    }
+    .sub{margin:10px 0 0; font-size:15px; line-height:1.6; opacity:.86; max-width:70ch;}
+    .btnRow{margin-top:16px; display:flex; gap:10px; flex-wrap:wrap}
+    button{
+      border:none; cursor:pointer; font-weight:900;
+      padding:12px 14px; border-radius:16px;
+      transition:.15s transform, .15s filter;
+    }
+    button:active{transform:scale(.98)}
+    .primary{
+      background: linear-gradient(135deg, var(--accent), #ff86bb);
+      color:#fff;
+      box-shadow: 0 16px 30px rgba(255,95,162,.25);
+    }
+    .ghost{background:#fff; border:1px solid #eee}
+
+    .grid{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap:12px;
+    }
+    .card{
+      grid-column: span 6;
+      background: var(--card);
+      border: 1px solid #ffffffaa;
+      border-radius: 24px;
+      padding: 12px;
+      box-shadow: 0 16px 38px rgba(0,0,0,.06);
+    }
+    .card.big{grid-column: span 12}
+    .head{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:6px 6px 10px;
+      font-weight:900;
+    }
+    .note{
+      padding:14px;
+      font-size:15px; line-height:1.65;
+    }
+    .mini{font-size:12px; opacity:.7; padding:0 14px 10px;}
+
+    .photos{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+      padding: 6px;
+    }
+    .ph{
+      aspect-ratio: 1/1;
+      border-radius: 18px;
+      overflow:hidden;
+      border:1px solid #fff;
+      background:#f3f4f6;
+      position:relative;
+      transform: translateZ(0);
+    }
+    .ph img{width:100%; height:100%; object-fit:cover; display:block}
+    .ph:after{
+      content:"";
+      position:absolute; inset:0;
+      background: radial-gradient(120px 120px at 20% 20%, rgba(255,255,255,.7), transparent 70%),
+                  linear-gradient(180deg, transparent 60%, rgba(0,0,0,.22));
+      opacity:.30;
+    }
+    .tag{
+      font-size:11px; font-weight:900;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid #eee;
+      background:#fff;
+    }
+
+    /* Modal */
+    .overlay{
+      position:fixed; inset:0; display:none; place-items:center;
+      background: rgba(17,24,39,.55);
+      padding: 18px;
+      z-index:50;
+    }
+    .modal{
+      width:min(560px, 100%);
+      background:#fff;
+      border-radius:28px;
+      padding:18px;
+      box-shadow: 0 25px 75px rgba(0,0,0,.28);
+      position:relative;
+      overflow:hidden;
+    }
+    .modal:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(220px 220px at 20% 10%, rgba(255,95,162,.25), transparent 60%),
+                  radial-gradient(220px 220px at 80% 20%, rgba(124,108,255,.22), transparent 60%);
+      pointer-events:none;
+    }
+    .modalInner{position:relative}
+    .close{
+      position:absolute; top:12px; right:12px;
+      width:42px; height:42px; border-radius:16px;
+      background:#fff; border:1px solid #eee;
+      display:grid; place-items:center;
+      font-weight:1000;
+      z-index:2;
+    }
+    .modal h2{margin:6px 0 6px; font-size:20px; letter-spacing:-.01em}
+    .modal p{margin:0 0 14px; opacity:.85; line-height:1.55}
+    .choices{display:flex; gap:10px; justify-content:center; padding:10px 0 6px; flex-wrap:wrap}
+    .yes{
+      background: linear-gradient(135deg, var(--accent), #ff86bb);
+      color:#fff;
+      min-width:160px;
+      box-shadow: 0 16px 30px rgba(255,95,162,.22);
+    }
+    .no{
+      background:#111827; color:#fff; min-width:160px;
+      position:relative;
+    }
+    .result{font-size:13px; opacity:.85; text-align:center; margin-top:10px; min-height:18px;}
+
+    /* Floating hearts + stars */
+    .floaty{
+      position:absolute;
+      bottom:-50px;
+      font-size:22px;
+      animation: floatUp linear forwards;
+      opacity:.95;
+      user-select:none;
+      pointer-events:none;
+      filter: drop-shadow(0 8px 14px rgba(0,0,0,.12));
+    }
+    @keyframes floatUp{
+      to{ transform: translateY(-125vh) rotate(18deg); opacity:0; }
+    }
+
+    /* tiny footer */
+    .footer{
+      margin-top:12px;
+      text-align:center;
+      font-size:12px;
+      opacity:.65;
+    }
+
+    @media (max-width:720px){
+      .card{grid-column: span 12}
+      .photos{grid-template-columns: repeat(2, 1fr)}
+      .title{font-size:24px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+
+      <div class="content">
+        <div class="top">
+          <div class="title">
+            <span class="sparkle">🎀</span>
+            <span>Hi <span id="name">my favorite human</span>…</span>
+            <span class="sparkle">✨</span>
+            <span class="pill">📅 <span id="datePill">Jan 25</span></span>
+          </div>
+          <div class="pill">💌 made with soft feelings</div>
+        </div>
+
+        <p class="sub" id="subtitle">
+          I made you a tiny cozy page because you will not pick my calls 🥺💗
+        </p>
+
+        <div class="btnRow">
+          <button class="primary" id="openAsk">Open a small request</button>
+          <button class="ghost" id="openGallery">Peek photos</button>
+        </div>
+
+        <div class="grid">
+          <div class="card big">
+            <div class="head">
+              <span>One message (please read slowly) 🫶</span>
+              <span class="tag">tiny + honest</span>
+            </div>
+            <div class="note" id="message">
+              Happy Birthday Duu 💗... Today is all about you. Thanks for being you — kind, chaotic, adorable, and unforgettable.
+              I hope this year brings you peace, big wins, and lots of happy moments💗 and I know you’ve been taking a little break but I really do miss you :(<br/>
+              God bless you and guide you duuuuu💗..<br/>
+ "I pray that God, the source of hope, will fill you completely with joy and peace because you trust in him. Then you will overflow with confident hope through the power of the Holy Spirit."<br/>
+ -Romans 15:13
+              <br><br>
+              So I made this page to tell you something gently:
+              <b>come back soon when you are done with the break 🥺</b> 💗
+              <div class="mini" style="padding:10px 0 0;">(Tap “Open a small request” 😌)</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="head">
+              <span>Cutie photo wall 📸</span>
+              <span class="tag">we need new photos together btw</span>
+            </div>
+            <div class="photos" id="photos">
+              <div class="ph"><img alt="Photo 1" src="Photos/1.jpg"/></div>
+              <div class="ph"><img alt="Photo 2" src="Photos/2.jpg"></div>
+              <div class="ph"><img alt="Photo 3" src="Photos/3.jpg"/></div>
+              <div class="ph"><img alt="Photo 4" src="Photos/4.jpg"/></div>
+              <div class="ph"><img alt="Photo 5" src="Photos/5.jpg"/></div>
+              <div class="ph"><img alt="Photo 6" src="Photos/6.jpg"/></div>
+            </div>
+            <div class="mini">Some images will not be seen fully :(…</div>
+          </div>
+
+          <div class="card">
+            <div class="head">
+              <span>Reasons why you are special to me 🌷</span>
+              <span class="tag">to infinity and beyond ∞︎︎</span>
+            </div>
+            <div class="note" id="reasons">
+              • You feel like home (even when you’re far)<br/>
+              • You have a soft and a kind heart<br/>
+            • Your smile is something I love to see<br/>
+            • You make boring things fun<br/>
+            • You’re always trying, always growing<br/>
+            • You’re YOU — and that’s the best part<br/>
+              • You make little moments feel special<br/>
+              • I hate this distance, don't you too?<br/>
+              <br/>
+              <b>*Madangi varuuu duuuuuu.</b><br/>
+              <b>From Kevaaaa.</b>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">💗 (If you’re reading this… call me.)</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Modal -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="askTitle">
+      <button class="close" id="closeModal" aria-label="Close">✕</button>
+      <div class="modalInner">
+        <h2 id="askTitle">Just one question… 🥺</h2>
+        <p id="askText">Will you stop taking a break from me?</p>
+
+        <div class="choices">
+          <button class="yes" id="yesBtn">Yes 💗</button>
+          <button class="no" id="noBtn">No 🙃</button>
+        </div>
+
+        <div class="result" id="result"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Quick edits here
+    const CONFIG = {
+      name: "Sharon💗",
+      fixedDateLabel: "Jan 25",
+      subtitle: "I made you a small page because you will not pick my calls and that sucks 🥺💗",
+      question: "Will you stop taking a break from me?",
+      yesMessage: "Okay… come back. 💗 I miss you more than I said. ",
+      noMessages: [
+        "Just… think once? 🥺",
+        "I’ll be patient, but I really miss you duu 💗",
+        " No pressure. Just… don’t disappear 🫶",
+        "CALL ME 🥹"
+      ],
+      noFinal: "Hehe okay… I’ll still be here duu. But if you can, choose ‘Yes’ 😌💗"
+    };
+
+    // Apply config
+    document.getElementById("name").textContent = CONFIG.name;
+    document.getElementById("datePill").textContent = CONFIG.fixedDateLabel;
+    document.getElementById("subtitle").textContent = CONFIG.subtitle;
+    document.getElementById("askText").textContent = CONFIG.question;
+
+    // Modal handlers
+    const overlay = document.getElementById("overlay");
+    const openAsk = document.getElementById("openAsk");
+    const closeModal = document.getElementById("closeModal");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const result = document.getElementById("result");
+    const openGallery = document.getElementById("openGallery");
+    const photoWall = document.getElementById("photos");
+
+    let noCount = 0;
+
+    function showModal(){
+      overlay.style.display = "grid";
+      overlay.setAttribute("aria-hidden", "false");
+      result.textContent = "";
+      noCount = 0;
+      resetNoButton();
+      popFloaties(10);
+    }
+    function hideModal(){
+      overlay.style.display = "none";
+      overlay.setAttribute("aria-hidden", "true");
+    }
+
+    openAsk.addEventListener("click", showModal);
+    closeModal.addEventListener("click", hideModal);
+    overlay.addEventListener("click", (e)=>{ if(e.target === overlay) hideModal(); });
+
+    yesBtn.addEventListener("click", ()=>{
+      result.textContent = CONFIG.yesMessage;
+      popFloaties(26);
+      yesBtn.style.transform = "scale(1.08)";
+      setTimeout(()=> yesBtn.style.transform = "", 180);
+    });
+
+    function resetNoButton(){
+      noBtn.style.transform = "";
+      noBtn.style.position = "relative";
+      noBtn.style.left = "0px";
+      noBtn.style.top = "0px";
+    }
+
+    // "No" runs away (cute)
+    noBtn.addEventListener("mouseenter", ()=>{
+      const dx = (Math.random()*200 - 100);
+      const dy = (Math.random()*140 - 70);
+      noBtn.style.transform = `translate(${dx}px, ${dy}px)`;
+    });
+
+    noBtn.addEventListener("click", ()=>{
+      const msg = CONFIG.noMessages[Math.min(noCount, CONFIG.noMessages.length-1)];
+      result.textContent = msg;
+      noCount++;
+      popFloaties(7);
+
+      if(noCount >= CONFIG.noMessages.length){
+        result.textContent = CONFIG.noFinal;
+        resetNoButton();
+      }
+    });
+
+    // Gallery button scroll
+    openGallery.addEventListener("click", ()=>{
+      photoWall.scrollIntoView({behavior:"smooth", block:"center"});
+      popFloaties(8);
+    });
+
+    // Floating hearts + sparkles
+    function popFloaties(n){
+      const items = ["💗","💖","💕","💘","✨","🌸","🫶","⭐"];
+      for(let i=0;i<n;i++){
+        const el = document.createElement("div");
+        el.className = "floaty";
+        el.textContent = items[Math.floor(Math.random()*items.length)];
+        el.style.left = Math.random()*100 + "vw";
+        el.style.animationDuration = (2.7 + Math.random()*2.8) + "s";
+        el.style.fontSize = (18 + Math.random()*18) + "px";
+        document.body.appendChild(el);
+        setTimeout(()=> el.remove(), 6000);
+      }
+    }
+  </script>
+</body>
+</html>
